@@ -31,3 +31,22 @@ class Meal:
             total['fats'] += p.fats
             total['carbs'] += p.carbs
         return total
+    
+class Activity:
+    
+    # Коефіцієнти спалювання калорій на хвилину
+    CALORIES_PER_MINUTE = {
+        "running": 10.0,
+        "walking": 4.5,
+        "swimming": 8.0,
+        "yoga": 3.0
+    }
+
+    def __init__(self, activity_type: str, duration_minutes: int):
+        self.activity_type = activity_type.lower()
+        self.duration_minutes = duration_minutes
+
+    def calculate_calories_burned(self) -> float:
+        rate = self.CALORIES_PER_MINUTE.get(self.activity_type, 5.0) # 5.0 - default
+        burned_cal = rate * self.duration_minutes
+        return burned_cal
