@@ -52,3 +52,21 @@ class Stats:
         report += f"  Середнє споживання: {avg} ккал/день.\n"
         report += f"  Днів досягнення цілі: {progress['met_target_days']}."
         return report
+    
+class Recs:
+
+    def __init__(self, balance: Balance):
+        self.balance = balance
+
+    def get_daily_recommendation(self) -> str:
+        net_cal = self.balance.calculate_net_balance()
+        remaining = self.balance.target_calories - net_cal
+
+        if remaining > 500:
+            return " Ваш баланс калорій ідеальний. Можна додати невеликий перекус (до 200 ккал)."
+        elif 0 <= remaining <= 500:
+            return " Ви у межах цілі! Продовжуйте контролювати порції."
+        elif remaining < 0 and remaining >= -300:
+            return " Невеликий надлишок калорій. Спробуйте прогулянку на 30 хв."
+        else:
+            return " Значний надлишок. Наступний прийом їжі зробіть легшим або додайте фізичну активність."
