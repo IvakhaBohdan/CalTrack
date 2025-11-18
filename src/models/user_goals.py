@@ -1,26 +1,29 @@
+from typing import List
+from datetime import date
+
+from .stats_recs import Balance 
+
 class Goals:
+    
     ACTIVITY_FACTORS = {
-        "sedentary": 1.2,       # Сидячий спосіб життя
-        "light": 1.375,         # Легка активність
-        "moderate": 1.55,       # Помірна активність
+        "sedentary": 1.2,       
+        "light": 1.375,         
+        "moderate": 1.55,       
         "high": 1.725,          
     }
 
-    def calculateDailyCalories(self, user_data):
+    def calculateDailyCalories(self, user_data: dict) -> int:
         
-        # 1. Визначення базового метаболізму (BMR)
         bmr = (10 * user_data['weight']) + (6.25 * user_data['height']) - (5 * user_data['age'])
         
         if user_data['gender'].lower() == 'male':
             bmr += 5
-        else: 
+        else:
             bmr -= 161
             
-        # 2. Застосування коефіцієнта активності
         activity_factor = self.ACTIVITY_FACTORS.get(user_data['activityLevel'].lower(), 1.2)
         tdce = bmr * activity_factor 
 
-        # 3. Коригування під ціль (-15% для втрати, +15% для набору)
         if user_data['goal'].lower() == 'loss':
             tdce *= 0.85
         elif user_data['goal'].lower() == 'gain':
@@ -31,15 +34,31 @@ class Goals:
 
 class User:
     
-    def __init__(self, name, age, gender, height, weight, activityLevel, goal):
+    def __init__(self, name: str, age: int, gender: str, height: float, weight: float, activityLevel: str, goal: str):
         self.name = name
-        self.age = age 
-        self.gender = gender 
-        self.height = height 
-        self.weight = weight 
+        self.age = age          
+        self.gender = gender    
+        self.height = height    
+        self.weight = weight    
         self.activityLevel = activityLevel
         self.goal = goal
-        self.daily_calories_target = Goals().calculateDailyCalories(self.__dict__)
-        self.meal_history = []
-        self.activity_history = []
+        
+        user_data = self.__dict__.copy()
+        self.daily_calories_target: int = Goals().calculateDailyCalories(user_data) 
+        
+        # ДОДАНО ДЛЯ КАРТКИ #8: Історія зберігає об'єкти Balance
+        self.history: List[Balance] = [] 
+        
+        # ДОДАНО ДЛЯ КАРТКИ #12
+        self.custom_products = [] 
 
+    def get_today_balance(self) -> Balance:
+        """Повертає баланс за сьогодні. В ЛР просто створює новий об'єкт."""
+        today = date.today()
+        # Повертаємо новий об'єкт Balance, використовуючи цільову норму калорій
+        return Balance(today, self.daily_calories_target)
+
+    def add_custom_product(self, product):
+        """Метод для додавання власних продуктів (CTF-04)."""
+        self.custom_products.append(product)
+        return f"Продукт '{product.name}' додано до власних."
