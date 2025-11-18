@@ -46,19 +46,13 @@ class User:
         user_data = self.__dict__.copy()
         self.daily_calories_target: int = Goals().calculateDailyCalories(user_data) 
         
-        # ДОДАНО ДЛЯ КАРТКИ #8: Історія зберігає об'єкти Balance
         self.history: List[Balance] = [] 
-        
-        # ДОДАНО ДЛЯ КАРТКИ #12
         self.custom_products = [] 
 
     def get_today_balance(self) -> Balance:
-        """Повертає баланс за сьогодні. В ЛР просто створює новий об'єкт."""
         today = date.today()
-        # Повертаємо новий об'єкт Balance, використовуючи цільову норму калорій
         return Balance(today, self.daily_calories_target)
 
     def add_custom_product(self, product):
-        """Метод для додавання власних продуктів (CTF-04)."""
         self.custom_products.append(product)
         return f"Продукт '{product.name}' додано до власних."
